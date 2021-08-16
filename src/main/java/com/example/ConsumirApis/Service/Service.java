@@ -1,9 +1,10 @@
 package com.example.ConsumirApis.Service;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 
 import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
 
 import com.example.ConsumirApis.RepositoryCep;
 import com.example.ConsumirApis.model.ModelCep;
@@ -15,20 +16,28 @@ public class Service {
 	@Autowired
 	RepositoryCep repository;
 	
-	public String retornaCep(String cep) {
+	public List<ModelCep> findByCep(String cep) {
 	
-	RestTemplate restTemplate = new RestTemplate();
-	ModelCep model = restTemplate.getForObject("https://viacep.com.br/ws/"+cep+"/json/", ModelCep.class); 
-	
-	Gson gson = new Gson();
-	String Json = gson.toJson(model);
-	System.out.println(Json);
-	
-	
-	InsertCep(model);
-	
-	return Json;
+	cep = cep.replace("-", "");	
+	System.out.println(cep);
+	List<ModelCep> retorno = repository.findByCep(cep);
+
+	if(retorno.isEmpty()){
+		ConsultaViacep(cep);
+	}
+	return repository.findByCep(cep);
   }
+
+  	public ModelCep ConsultaViacep(String cep){
+		RestTemplate restTemplate = new RestTemplate();
+		ModelCep modelCep = restTemplate.getForObject("https://viacep.com.br/ws/"+cep+"/json/", ModelCep.class); 
+		modelCep.setCep(cep.replace("-", ""));
+		Gson gson = new Gson();
+		String Json = gson.toJson(modelCep);
+		System.out.println(Json);
+		InsertCep(modelCep);	
+		return modelCep;
+	  }
 	
 	public void InsertCep(ModelCep model) {
 		repository.save(model);

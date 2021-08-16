@@ -6,8 +6,9 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-
+import java.util.List;
 import com.example.ConsumirApis.Service.Service;
+import com.example.ConsumirApis.model.*;
 
 
 @RestController
@@ -16,10 +17,11 @@ public class Controller {
 	@Autowired
 	Service service;
 	
-	@GetMapping("/{cep}")
-	public String ListarCep(@PathVariable("cep") String cep ){
 
-		return service.retornaCep(cep);
+	@GetMapping("/listacep/{cep}")
+	public List<ModelCep> ListarCep(@PathVariable("cep") String cep ){
+
+		return service.findByCep(cep);
 		
 	}
 	
